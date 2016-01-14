@@ -23,7 +23,17 @@ private slots:
 
     void on_searchBar_returnPressed();
 
+    void on_changeDirButton_clicked();
+
+    void on_inputDir_returnPressed();
+
+    void init();
+
     void search();
+
+    void toggleDirInput(bool show);
+
+    void setNewDir(string dir);
 
 private:
     Ui::Finder *ui;
