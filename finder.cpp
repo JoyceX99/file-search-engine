@@ -2,6 +2,7 @@
 #include "ui_finder.h"
 #include "listdelegate.h"
 #include <QtDebug>
+#include <QFileDialog>
 
 using std::string;
 using std::vector;
@@ -11,7 +12,6 @@ Finder::Finder(QWidget *parent) :
     ui(new Ui::Finder)
 {
     ui->setupUi(this);
-    toggleDirInput(false);
 
     InvertedIndex index;
     this->inv_ind = index;
@@ -28,38 +28,20 @@ void Finder::init() {
 }
 
 void Finder::setNewDir(string dir) {
-    if (!dir.empty()) { //if not empty string, clear index, add specified dir
-        this->inv_ind.clearIndex();
-        this->inv_ind.addDir(dir);
+    this->inv_ind.clearIndex();
+    this->inv_ind.addDir(dir);
 
-//        vector<string> allFiles = inv_ind.getFileList();
-//        for (string file : allFiles)
-//            qDebug() << QString::fromStdString(file);
-//        if (allFiles.empty()) {
-//            qDebug() << "No files";
-//        } else {
-//            qDebug() << "Printed some files!";
-//        }
-
-        QLabel *dirDisplay = ui->directoryLabel;
-        dirDisplay->setText(QString::fromStdString("Searching: " + dir));
-    } else {
-        QLabel *dirDisplay = ui->directoryLabel;
-        dirDisplay->setText("Searching: " + QString::fromStdString(inv_ind.getBaseDir()));
-    }
-    toggleDirInput(false); //show label
+    QLabel *dirDisplay = ui->directoryLabel;
+    dirDisplay->setText(QString::fromStdString("Searching: " + dir));
 }
 
 
-void Finder::toggleDirInput(bool show) {
-    if (show) {
-        ui->directoryLabel->hide();
-        ui->inputDir->show();
-        ui->inputDir->setText(QString::fromStdString(inv_ind.getBaseDir()));
-    } else {
-        ui->directoryLabel->show();
-        ui->inputDir->hide();
-    }
+void Finder::selectNewDir() {
+    QFileDialog dialog;
+    dialog.setFileMode(QFileDialog::Directory);
+    QString dirName = dialog.getExistingDirectory(this,
+        tr("Select File(s)"), QString::fromStdString(inv_ind.getBaseDir()));
+    setNewDir(dirName.toStdString());
 }
 
 void Finder::search() {
@@ -117,15 +99,5 @@ void Finder::on_searchBar_returnPressed() {
 }
 
 void Finder::on_changeDirButton_clicked() {
-    QLineEdit* input = ui->inputDir;
-
-    if (input->isVisible())         // if input is already showing, set input
-        setNewDir((input->text()).toStdString());
-    else                            // else show input
-        toggleDirInput(true);
-}
-
-void Finder::on_inputDir_returnPressed() {
-    QString dir = ui->inputDir->text();
-    setNewDir((dir).toStdString());
+    selectNewDir();
 }

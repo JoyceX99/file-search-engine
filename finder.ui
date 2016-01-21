@@ -114,18 +114,8 @@
    <property name="text">
     <string>Searching: </string>
    </property>
-  </widget>
-  <widget class="QLineEdit" name="inputDir">
-   <property name="enabled">
-    <bool>true</bool>
-   </property>
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>440</y>
-     <width>361</width>
-     <height>31</height>
-    </rect>
+   <property name="scaledContents">
+    <bool>false</bool>
    </property>
   </widget>
  </widget>

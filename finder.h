@@ -25,13 +25,11 @@ private slots:
 
     void on_changeDirButton_clicked();
 
-    void on_inputDir_returnPressed();
-
     void init();
 
     void search();
 
-    void toggleDirInput(bool show);
+    void selectNewDir();
 
     void setNewDir(string dir);
 
