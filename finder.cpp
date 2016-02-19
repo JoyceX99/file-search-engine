@@ -83,7 +83,10 @@ void Finder::search() {
                 string text = prev.second;
                 display += text + "...";
             }
-            item->setData(Qt::UserRole, QString::fromStdString(display));
+
+            //data in UserRole: {file path, preview};
+            QList<QVariant> fileInfo = {QString::fromStdString(res.filePath), QString::fromStdString(display)};
+            item->setData(Qt::UserRole, QVariant(fileInfo));
 
             resultList->addItem(item);
         }

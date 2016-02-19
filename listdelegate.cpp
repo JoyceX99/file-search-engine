@@ -1,4 +1,6 @@
 #include "listdelegate.h"
+#include <QEvent>
+#include <QDebug>
 
 ListDelegate::ListDelegate(QObject *parent)
 : QAbstractItemDelegate(parent) {}
@@ -21,27 +23,45 @@ void ListDelegate::paint ( QPainter * painter, const QStyleOptionViewItem & opti
             painter->setBrush( (index.row() % 2) ? Qt::white : QColor(250,250,250) );
         }
 
+        //GET FILE, PREVIEW
+        QString fileName = index.data(Qt::DisplayRole).toString();
+        QList<QVariant> fileInfo = index.data(Qt::UserRole).toList();
+        QString preview = fileInfo[1].toString();
+
+        //QObject::connect(option, SIGNAL(mouseDoubleClickEvent(QMouseEvent * event)), this, SLOT(openFile(filePath.toStdString())));
+
+
         painter->setPen(rectPen);
         painter->drawRect(r);
         painter->setPen(fontPen);
-        //painter->drawLine(QPointF(r.left(), r.top()+r.height()), QPointF(r.left()+r.width(), r.top()+r.height()));
-
-        //GET FILE, PREVIEW
-        QString file = index.data(Qt::DisplayRole).toString();
-        QString preview = index.data(Qt::UserRole).toString();
+        //painter->drawLine(QPointF(r.left(), r.top()+r.height()), QPointF(r.left()+r.width(), r.top()+r.height()));    
 
         int padding = 10;
 
         //FILE
         r = option.rect.adjusted(padding, 0, -10, -42);
         painter->setFont( QFont( "Open Sans", 15, QFont::Bold ) );
-        painter->drawText(r.left(), r.top(), r.width(), r.height(), Qt::AlignBottom|Qt::AlignLeft, file, &r);
+        painter->drawText(r.left(), r.top(), r.width(), r.height(), Qt::AlignBottom|Qt::AlignLeft, fileName, &r);
 
         //PREVIEW
         r = option.rect.adjusted(padding, 38, -10, 0);
         painter->setFont( QFont( "Open Sans", 12, QFont::Normal ) );
         painter->drawText(r.left(), r.top(), r.width(), r.height()-5, Qt::TextWordWrap|Qt::ElideRight, preview, &r); //Qt::TextWordWrap
     }
+}
+
+bool ListDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) {
+    QList<QVariant> fileInfo = index.data(Qt::UserRole).toList();
+    QString filePath = fileInfo[0].toString();
+    if (event->type() == QEvent::MouseButtonDblClick) {
+        openFile(filePath.toStdString());
+        return true;
+    }
+    return false;
+}
+
+void ListDelegate::openFile(std::string path) const {
+    qDebug() << QString::fromStdString(path);
 }
 
 QSize ListDelegate::sizeHint ( const QStyleOptionViewItem & option, const QModelIndex & index ) const {
