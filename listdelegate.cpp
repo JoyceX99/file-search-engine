@@ -28,9 +28,6 @@ void ListDelegate::paint ( QPainter * painter, const QStyleOptionViewItem & opti
         QList<QVariant> fileInfo = index.data(Qt::UserRole).toList();
         QString preview = fileInfo[1].toString();
 
-        //QObject::connect(option, SIGNAL(mouseDoubleClickEvent(QMouseEvent * event)), this, SLOT(openFile(filePath.toStdString())));
-
-
         painter->setPen(rectPen);
         painter->drawRect(r);
         painter->setPen(fontPen);
@@ -61,7 +58,9 @@ bool ListDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const Q
 }
 
 void ListDelegate::openFile(std::string path) const {
-    qDebug() << QString::fromStdString(path);
+    std::string command = "open " + path;
+    system(command.c_str());
+    qDebug() << QString::fromStdString(command);
 }
 
 QSize ListDelegate::sizeHint ( const QStyleOptionViewItem & option, const QModelIndex & index ) const {
