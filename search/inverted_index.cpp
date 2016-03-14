@@ -49,26 +49,27 @@ void InvertedIndex::clearIndex() {
 
 /* Add all files in given directory to the index */
 void InvertedIndex::addDir(string dir) {
-  cleanDirEntry(dir);
+  cleanDirEntry(dir); // strip whitespace, add '/' to end if not there
   DIR *pdir;
   struct dirent *cur;
   if ((pdir = opendir((dir).c_str())) != NULL) {
     while ((cur = readdir(pdir)) != NULL) {
-      if (cur->d_name[0] == '.') //ignore dot files
+      if (cur->d_name[0] == '.') // ignore dot files
         continue;
       if (cur->d_type != DT_DIR) {
         string newFile = dir+string(cur->d_name);
+        // if file not already present, add
         if (std::find(fileList.begin(), fileList.end(), newFile) == fileList.end()) {
           addFile(dir+string(cur->d_name));
         }
       }
-      else { //subdirectory
+      else { // open subdirectory
         string subdir = string(cur->d_name)+"/";
         addDir(dir+subdir);
       }
     }
     closedir(pdir);
-    updateRoot(dir);
+    updateRoot(dir); // update shared path of all files (for display purposes)
   } else {
     std::cout << "Error(" << errno << ") opening " << dir << std::endl;
   }
